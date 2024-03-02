@@ -1,73 +1,63 @@
-const loadPhone = async (searchText) => {
+const loadPhone = async (searchText, isShowAll) => {
     const res = await fetch(`https://openapi.programming-hero.com/api/phones?search=${searchText}`);
     const data = await res.json();
-    const phones = data.data;
-    // console.log(phones);
-    displayPhones(phones);
+    displayPhones(data.data, isShowAll);
+    // console.log(data.data);
 }
-const displayPhones = (phones) => {
-    const phoneContainer = document.getElementById('phone-container');
+const phoneContainer = document.getElementById('phone-container');
+
+const displayPhones = (phones, isShowAll) => {
+
     phoneContainer.textContent = '';
-    loadingcontainer(false);
-    const showallcontainer = document.getElementById('showall-container');
+    console.log(phones.length);
     if (phones.length > 12) {
-        showallcontainer.classList.remove('hidden');
+        phones = phones.slice(0, 5);
+        // handaleShowAll();
     }
     else {
-        showallcontainer.classList.add('hidden');
-    }
-    phones = phones.slice(0, 12);
-    // console.log(phones.length);
 
-    // phones = phones.slice(0,5);
+    }
+    console.log('is show all', isShowAll);
     phones.forEach(phone => {
         // console.log(phone);
         const phoneCard = document.createElement('div');
-        phoneCard.classList = 'card p-4 bg-gray-400 shadow-xl';
+        phoneCard.classList = 'card  bg-base-100 shadow-xl';
         phoneCard.innerHTML = `
-        <figure><img src="${phone.image}"
-                            alt="Shoes" /></figure>
-                    <div class="card-body">
-                        <h2 class="card-title">${phone.phone_name}</h2>
-                        <p>If a dog chews shoes whose shoes does he choose?</p>
-                        <div class="card-actions justify-center">
-                            <button onclick="showModal('${phone.slug}');show_my_modal_details.showModal()" class="btn btn-primary">Show Details</button>
-                        </div>
-                    </div>
-        
+        <figure><img src="${phone.image}" alt="Shoes" />
+        </figure>
+        <div class="card-body">
+          <h2 class="card-title">${phone.phone_name}</h2>
+          <p>If a dog chews shoes whose shoes does he choose?</p>
+          <div class="card-actions justify-end">
+            <button class="btn btn-primary">Buy Now</button>
+          </div>
+        </div>
         `;
         phoneContainer.appendChild(phoneCard);
 
     });
+    toggleSpinner(false);
+}
 
-}
-const handleSearch = () => {
-    // console.log('sss');
-    loadingcontainer(true);
-    const searchField = document.getElementById('input-field');
+const handaleSearch = (isShowAll) => {
+    toggleSpinner(true);
+    const searchField = document.getElementById('search-field');
     const searchText = searchField.value;
-    // console.log(searchText);
-    loadPhone(searchText);
+    console.log('ss', searchText);
+    // searchText ='';
+    loadPhone(searchText, isShowAll);
+    searchField.value = '';
 }
-const loadingcontainer = (isloading) => {
-    const loadingcontainers = document.getElementById('loading-container');
-    if (isloading) {
-        loadingcontainers.classList.remove('hidden');
+const toggleSpinner = (isLoading) => {
+    const loader = document.getElementById('loader');
+    if (isLoading) {
+        loader.classList.remove('hidden');
     }
     else {
-        loadingcontainers.classList.add('hidden');
+        loader.classList.add('hidden');
     }
 }
-const showModal = async (id) => {
-    // console.log('click',id);
-    const res = await fetch(`https://openapi.programming-hero.com/api/phone/apple_iphone_13_pro_max-${id}`);
-    const data = await res.json();
-    // console.log(data);
-}
-const showModalDetails = (phone) => {
-    console.log(phone);
-    show_my_modal_details.showModal(phone);
-    const phoneName = document.getElementById('show-details-phone-name');
-    phoneName.innerText = phone.brand;
+const handaleShowAll = () => {
+    handaleSearch(true);
 }
 loadPhone();
